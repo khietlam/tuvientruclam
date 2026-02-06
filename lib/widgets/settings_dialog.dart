@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/style.dart';
 import '../widgets/app_dialogs.dart';
 
 class SettingsDialog extends StatefulWidget {
@@ -56,7 +57,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      elevation: 8,
       backgroundColor: Colors.black87,
+      shadowColor: Colors.black,
+      surfaceTintColor: Colors.black,
       title: Text(
         "Cài đặt",
         style: AppTextStyles.getResponsiveStyle(context, 20, 28),
@@ -126,17 +130,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     Colors.white,
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                style: AppButtonStyles.elevatedButtonStyle(context),
               ),
             ),
           ],

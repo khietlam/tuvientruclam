@@ -7,6 +7,7 @@ import 'package:tuvientruclam/screens/slideshow_page.dart';
 
 import '../services/data_service.dart';
 import '../services/permission_service.dart';
+import '../utils/style.dart';
 import '../widgets/app_dialogs.dart';
 
 class MainSlideshowPage extends StatefulWidget {

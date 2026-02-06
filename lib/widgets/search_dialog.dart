@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/person.dart';
 import '../services/search_service.dart';
+import '../utils/style.dart';
 import '../widgets/app_dialogs.dart';
 
 class SearchDialog extends StatefulWidget {
@@ -152,7 +153,10 @@ class _SearchDialogState extends State<SearchDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      elevation: 8,
       backgroundColor: Colors.black87,
+      shadowColor: Colors.black,
+      surfaceTintColor: Colors.black,
       title: Text(
         "Tìm kiếm",
         style: AppTextStyles.getResponsiveStyle(context, 20, 28),

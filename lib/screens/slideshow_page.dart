@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../models/person.dart';
+import '../utils/style.dart';
 import '../widgets/icon_button_widget.dart';
 import '../widgets/image_display_widget.dart';
 import '../widgets/person_info_widget.dart';
@@ -136,6 +138,7 @@ class _SlideshowPageState extends State<SlideshowPage> {
       if (mounted) {
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (_) => AppDialogs.successDialog(
             context,
             "Thành công!",
@@ -200,6 +203,78 @@ class _SlideshowPageState extends State<SlideshowPage> {
           });
         },
         onReopenSearch: showSearch,
+      ),
+    );
+  }
+
+  void showQRCode() {
+    final p = widget.persons[index];
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Mã QR: ${p.theDanh}',
+                style: AppTextStyles.getResponsiveStyle(
+                  context,
+                  14,
+                  20,
+                  Colors.black,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: QrImageView(
+                  data: p.id.toString(),
+                  version: QrVersions.auto,
+                  size: 300.0,
+                  backgroundColor: Colors.white,
+                  embeddedImage: AssetImage('assets/round_logo.png'),
+                  embeddedImageStyle: QrEmbeddedImageStyle(size: Size(80, 80)),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'ID: ${p.id}',
+                style: AppTextStyles.getResponsiveStyle(
+                  context,
+                  12,
+                  18,
+                  Colors.black,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                style: AppButtonStyles.elevatedButtonStyle(context),
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Đóng',
+                  style: AppTextStyles.getResponsiveStyle(
+                    context,
+                    12,
+                    18,
+                    Colors.white,
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -448,6 +523,11 @@ class _SlideshowPageState extends State<SlideshowPage> {
                           );
                         },
                         heroTag: 'home_button',
+                      ),
+                      IconButtonWidget(
+                        icon: Icons.qr_code,
+                        onTap: showQRCode,
+                        heroTag: 'qr_display_button',
                       ),
                     ] else ...[
                       // Show all controls for multiple person slideshows

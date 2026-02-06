@@ -14,6 +14,7 @@ This repository includes a comprehensive CI/CD pipeline for building and deployi
 - **Triggers**: Push to `master`/`develop`, PRs to `master`, manual
 - **Outputs**: Release APK, App Bundle (.aab), checksums
 - **Features**: Auto-versioning, automatic releases
+- **Flutter Version**: 3.38.9
 
 ### 2. Build Debug APK  
 - **Triggers**: Feature/hotfix branches, PRs

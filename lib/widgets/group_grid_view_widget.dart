@@ -49,6 +49,8 @@ class GroupGridView extends StatelessWidget {
                     height: MediaQuery.of(context).size.height * 0.8,
                     child: Card(
                       color: Colors.black87,
+                      shadowColor: Colors.black,
+                      surfaceTintColor: Colors.black,
                       elevation: 8,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -166,7 +168,9 @@ class GroupGridView extends StatelessWidget {
             },
             child: Card(
               color: Colors.black54,
-              elevation: 4,
+              elevation: 8,
+              shadowColor: Colors.black,
+              surfaceTintColor: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
