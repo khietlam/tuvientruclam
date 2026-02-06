@@ -12,10 +12,6 @@ on:
         required: false
         default: 'Automated release build'
 
-permissions:
-  contents: write
-  releases: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
