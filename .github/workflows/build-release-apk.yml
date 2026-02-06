@@ -1,0 +1,166 @@
+name: Build Release APK
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release notes for this build'
+        required: false
+        default: 'Automated release build'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6' # Specify your Flutter version
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Verify Flutter installation
+      run: flutter doctor -v
+      
+    - name: Generate build number
+      id: build_number
+      run: |
+        BUILD_NUMBER=$((GITHUB_RUN_NUMBER))
+        echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+        
+    - name: Build APK (Release)
+      run: |
+        flutter build apk --release \
+          --build-number=$BUILD_NUMBER \
+          --build-name=1.0.$BUILD_NUMBER \
+          --verbose
+          
+    - name: Build App Bundle (Release)
+      run: |
+        flutter build appbundle --release \
+          --build-number=$BUILD_NUMBER \
+          --build-name=1.0.$BUILD_NUMBER \
+          --verbose
+          
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk-v${{ env.BUILD_NUMBER }}
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+        
+    - name: Upload App Bundle Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-aab-v${{ env.BUILD_NUMBER }}
+        path: build/app/outputs/bundle/release/app-release.aab
+        retention-days: 30
+        
+    - name: Generate APK checksum
+      run: |
+        cd build/app/outputs/flutter-apk/
+        sha256sum app-release.apk > app-release.apk.sha256
+        cd ../../../../..
+        
+    - name: Generate AAB checksum
+      run: |
+        cd build/app/outputs/bundle/release/
+        sha256sum app-release.aab > app-release.aab.sha256
+        cd ../../../../..
+        
+    - name: Upload checksums
+      uses: actions/upload-artifact@v4
+      with:
+        name: checksums-v${{ env.BUILD_NUMBER }}
+        path: |
+          build/app/outputs/flutter-apk/app-release.apk.sha256
+          build/app/outputs/bundle/release/app-release.aab.sha256
+        retention-days: 30
+        
+    - name: Create Release (if on main branch)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.0.${{ env.BUILD_NUMBER }}
+        release_name: Release v1.0.${{ env.BUILD_NUMBER }}
+        body: |
+          ## Release v1.0.${{ env.BUILD_NUMBER }}
+          
+          **Build Information:**
+          - Build Number: ${{ env.BUILD_NUMBER }}
+          - Flutter Version: 3.19.6
+          - Build Date: ${{ github.event.head_commit.timestamp }}
+          - Commit: ${{ github.sha }}
+          
+          **Release Notes:**
+          ${{ github.event.inputs.release_notes || 'Automated release build' }}
+          
+          **Download:**
+          - APK: `release-apk-v${{ env.BUILD_NUMBER }}.zip`
+          - App Bundle: `release-aab-v${{ env.BUILD_NUMBER }}.zip`
+          
+          **Installation:**
+          - For direct installation, download the APK file
+          - For Play Store submission, use the App Bundle (.aab) file
+        draft: false
+        prerelease: false
+        
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Run Flutter tests
+      run: flutter test --coverage
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+        
+    - name: Analyze code
+      run: flutter analyze
+      
+    - name: Check code formatting
+      run: dart format --set-exit-if-changed .

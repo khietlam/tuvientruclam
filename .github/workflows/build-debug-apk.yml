@@ -1,0 +1,59 @@
+name: Build Debug APK
+
+on:
+  push:
+    branches: [ feature/*, hotfix/* ]
+  pull_request:
+    branches: [ develop, main ]
+  workflow_dispatch:
+
+jobs:
+  build-debug:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Generate build number
+      id: build_number
+      run: |
+        BUILD_NUMBER=$((GITHUB_RUN_NUMBER))
+        echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+        echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+        
+    - name: Build APK (Debug)
+      run: |
+        flutter build apk --debug \
+          --build-number=$BUILD_NUMBER \
+          --build-name=1.0.$BUILD_NUMBER-debug \
+          --verbose
+          
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk-v${{ env.BUILD_NUMBER }}
+        path: build/app/outputs/flutter-apk/app-debug.apk
+        retention-days: 7
+        
+    - name: Run basic tests
+      run: flutter test --coverage
+      
+    - name: Analyze code
+      run: flutter analyze

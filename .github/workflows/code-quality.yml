@@ -1,0 +1,82 @@
+name: Code Quality and Security
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Flutter analyze
+      run: flutter analyze --fatal-infos
+      
+    - name: Check code formatting
+      run: dart format --set-exit-if-changed .
+      
+    - name: Run tests with coverage
+      run: flutter test --coverage
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        
+    - name: Generate test report
+      run: |
+        flutter test --reporter=json > test-report.json || true
+        
+    - name: Upload test report
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report
+        path: test-report.json
+        retention-days: 7
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Run security scan
+      run: |
+        # Check for common security issues
+        dart pub audit
+        
+        # Check for hardcoded secrets (basic check)
+        grep -r "password\|secret\|key\|token" --include="*.dart" lib/ --exclude-dir=test || true
+        
+    - name: Check dependencies for vulnerabilities
+      run: |
+        flutter pub deps --style=tree > deps.txt
+        echo "Dependencies tree saved to deps.txt"

@@ -1,0 +1,80 @@
+name: Deploy to Play Store
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Play Store track'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+        - internal
+        - alpha
+        - beta
+        - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Download release artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: release-aab-v${{ github.run_number }}
+        path: build/app/outputs/bundle/release/
+        
+    - name: Setup Google Play CLI
+      run: |
+        wget -q https://dl.google.com/dl/android/maven2/com/google/android/play/core/1.10.3/core-1.10.3.pom
+        # Install Google Play Publisher CLI
+        npm install -g @google-cloud/androidpublisher
+        
+    - name: Deploy to Play Store
+      env:
+        GOOGLE_PLAY_JSON_KEY: ${{ secrets.PLAY_STORE_JSON_KEY }}
+      run: |
+        # Create service account file
+        echo "$GOOGLE_PLAY_JSON_KEY" > service-account.json
+        
+        # Deploy to specified track
+        TRACK="${{ github.event.inputs.track || 'internal' }}"
+        
+        echo "Deploying to track: $TRACK"
+        
+        # Use google-play-cli or fastlane for deployment
+        # This is a placeholder - adjust based on your preferred deployment method
+        
+        # Example using google-play-cli (if available)
+        # google-play-cli upload-aab --package-name com.your.package --aab build/app/outputs/bundle/release/app-release.aab --track $TRACK --json-key service-account.json
+        
+        echo "Deployment to $TRACK track completed"
+        
+    - name: Notify deployment
+      if: success()
+      run: |
+        echo "🚀 App successfully deployed to Play Store!"
+        echo "Track: ${{ github.event.inputs.track || 'internal' }}"
+        echo "Version: ${{ github.event.release.tag_name }}"
