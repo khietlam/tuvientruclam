@@ -7,21 +7,21 @@ This repository includes automated CI/CD pipelines using GitHub Actions to build
 
 ### 1. Build Release APK (`build-release-apk.yml`)
 **Triggers:**
-- Push to `main` or `develop` branches
-- Pull requests to `main`
+- Push to `master` or `develop` branches
+- Pull requests to `master`
 - Manual workflow dispatch
 
 **Features:**
 - Builds release APK and App Bundle (.aab)
 - Automatic versioning with build numbers
 - Artifact upload with checksums
-- Automatic releases on main branch pushes
+- Automatic releases on master branch pushes
 - Code signing ready (configure signing keys as secrets)
 
 ### 2. Build Debug APK (`build-debug-apk.yml`)
 **Triggers:**
 - Push to `feature/*` and `hotfix/*` branches
-- Pull requests to `develop` or `main`
+- Pull requests to `develop` or `master`
 - Manual workflow dispatch
 
 **Features:**
@@ -32,7 +32,7 @@ This repository includes automated CI/CD pipelines using GitHub Actions to build
 ### 3. Code Quality and Security (`code-quality.yml`)
 **Triggers:**
 - Push to all branches
-- Pull requests to `main` or `develop`
+- Pull requests to `master` or `develop`
 
 **Features:**
 - Flutter analyze with strict rules
@@ -65,7 +65,7 @@ flutter-version: '3.19.6'  # Change to your required version
 ```
 
 ### 3. Branch Strategy
-- `main`: Production builds with automatic releases
+- `master`: Production builds with automatic releases
 - `develop`: Staging builds
 - `feature/*`: Feature branch debug builds
 - `hotfix/*`: Hotfix debug builds

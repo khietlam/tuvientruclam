@@ -4,14 +4,14 @@ This repository includes a comprehensive CI/CD pipeline for building and deployi
 
 ## 🚀 Quick Start
 
-1. **Push to main branch** → Automatic release build
+1. **Push to master branch** → Automatic release build
 2. **Push to feature branches** → Debug builds
 3. **Pull requests** → Full testing and analysis
 
 ## 📋 Available Workflows
 
 ### 1. Build Release APK
-- **Triggers**: Push to `main`/`develop`, PRs to `main`, manual
+- **Triggers**: Push to `master`/`develop`, PRs to `master`, manual
 - **Outputs**: Release APK, App Bundle (.aab), checksums
 - **Features**: Auto-versioning, automatic releases
 
@@ -86,7 +86,7 @@ flutter-version: '3.19.6'  # Change to your version
 Add different flavors in `android/app/build.gradle.ci`
 
 ### Branch Strategy
-- `main`: Production builds with releases
+- `master`: Production builds with releases
 - `develop`: Staging builds  
 - `feature/*`: Feature testing
 - `hotfix/*`: Bug fixes

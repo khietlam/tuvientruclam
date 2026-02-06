@@ -22,7 +22,7 @@ Your Flutter CI/CD pipeline has been successfully configured with GitHub Actions
 ## 🎯 How to Use
 
 ### Automatic Builds
-1. **Push to `main`** → Release APK + App Bundle + GitHub Release
+1. **Push to `master`** → Release APK + App Bundle + GitHub Release
 2. **Push to `feature/*`** → Debug APK for testing
 3. **Create Pull Request** → Full testing and analysis
 
@@ -34,7 +34,7 @@ Your Flutter CI/CD pipeline has been successfully configured with GitHub Actions
 ### Download Artifacts
 1. Go to **Actions** → Select workflow run
 2. Download from **Artifacts** section
-3. Check **Releases** page for main branch builds
+3. Check **Releases** page for master branch builds
 
 ## 🔧 Next Steps
 
@@ -57,7 +57,7 @@ KEY_PASSWORD=your_key_password
 # Push a small change to trigger the workflow
 git add .
 git commit -m "Add CI/CD configuration"
-git push origin main
+git push origin master
 ```
 
 ### 3. Monitor Results
