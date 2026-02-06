@@ -71,10 +71,16 @@ jobs:
     - name: Run security scan
       run: |
         # Check for common security issues
-        dart pub audit
+        # dart pub audit is not available in this version, use alternative checks
         
         # Check for hardcoded secrets (basic check)
         grep -r "password\|secret\|key\|token" --include="*.dart" lib/ --exclude-dir=test || true
+        
+        # Check for insecure network calls
+        grep -r "http://" --include="*.dart" lib/ --exclude-dir=test || true
+        
+        # Check for debug prints that might leak sensitive data
+        grep -r "print(" --include="*.dart" lib/ --exclude-dir=test | grep -i "password\|secret\|key\|token" || true
         
     - name: Check dependencies for vulnerabilities
       run: |
