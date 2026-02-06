@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -7,9 +6,6 @@ import 'package:tuvientruclam/screens/main_slideshow_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Ensure UTF-8 encoding is properly supported
-  Encoding encoding = utf8;
-  
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);

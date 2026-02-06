@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import '../widgets/app_dialogs.dart';
 
 class SettingsDialog extends StatefulWidget {

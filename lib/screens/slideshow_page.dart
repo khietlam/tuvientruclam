@@ -129,19 +129,20 @@ class _SlideshowPageState extends State<SlideshowPage> {
       final result = await DataService.selectDataFolder();
 
       // Close loading dialog
-      Navigator.pop(context);
+      if (mounted) Navigator.pop(context);
 
       // Show success dialog
-      showDialog(
-        context: context,
-        builder: (_) => AppDialogs.successDialog(
-          context,
-          "Thành công!",
-          result,
-          "Khởi động lại",
-          () {
-            Navigator.pop(context);
-            // Restart the app to load new data
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (_) => AppDialogs.successDialog(
+            context,
+            "Thành công!",
+            result,
+            "Khởi động lại",
+            () {
+              Navigator.pop(context);
+              // Restart the app to load new data
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const MainSlideshowPage()),
@@ -149,23 +150,26 @@ class _SlideshowPageState extends State<SlideshowPage> {
           },
         ),
       );
+      }
     } catch (e) {
       // Close loading dialog if open
-      if (Navigator.canPop(context)) {
+      if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
 
       // Show error dialog
-      showDialog(
-        context: context,
-        builder: (_) => AppDialogs.errorDialog(
-          context,
-          "Lỗi!",
-          e.toString(),
-          "Đóng",
-          () => Navigator.pop(context),
-        ),
-      );
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (_) => AppDialogs.errorDialog(
+            context,
+            "Lỗi!",
+            e.toString(),
+            "Đóng",
+            () => Navigator.pop(context),
+          ),
+        );
+      }
     }
   }
 

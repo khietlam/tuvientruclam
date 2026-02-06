@@ -1,0 +1,64 @@
+# Flutter Build Configuration
+
+## Keystore Configuration (Optional)
+# Uncomment and configure if you need signed APKs
+
+# android {
+#     signingConfigs {
+#         release {
+#             if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+#                 storeFile file(MYAPP_RELEASE_STORE_FILE)
+#                 storePassword MYAPP_RELEASE_STORE_PASSWORD
+#                 keyAlias MYAPP_RELEASE_KEY_ALIAS
+#                 keyPassword MYAPP_RELEASE_KEY_PASSWORD
+#             }
+#         }
+#     }
+#     buildTypes {
+#         release {
+#             signingConfig signingConfigs.release
+#         }
+#     }
+# }
+
+## Build Variants Configuration
+# Add different build variants if needed
+
+# android {
+#     flavorDimensions "version"
+#     productFlavors {
+#         production {
+#             dimension "version"
+#             applicationIdSuffix ""
+#             versionNameSuffix "-production"
+#         }
+#         staging {
+#             dimension "version"
+#             applicationIdSuffix ".staging"
+#             versionNameSuffix "-staging"
+#         }
+#     }
+# }
+
+## ProGuard Configuration (Optional)
+# Enable code shrinking and obfuscation
+
+# android {
+#     buildTypes {
+#         release {
+#             minifyEnabled true
+#             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+#         }
+#     }
+# }
+
+## Additional Build Options
+# Configure additional build settings as needed
+
+# android {
+#     compileSdkVersion 34
+#     defaultConfig {
+#         targetSdkVersion 34
+#         minSdkVersion 21
+#     }
+# }

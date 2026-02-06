@@ -2,8 +2,8 @@ import 'package:diacritic/diacritic.dart';
 import '../models/person.dart';
 
 class SearchService {
-  static const int DEFAULT_RESULT_LIMIT = 100;
-  static const int DEFAULT_PAGE_SIZE = 20;
+  static const int defaultResultLimit = 100;
+  static const int defaultPageSize = 20;
 
   static List<Person> searchPersons(
     List<Person> persons,
@@ -14,7 +14,7 @@ class SearchService {
   }) {
     if (searchTerms.isEmpty) return [];
 
-    final resultLimit = limit ?? DEFAULT_RESULT_LIMIT;
+    final resultLimit = limit ?? defaultResultLimit;
     final resultOffset = offset ?? 0;
     final foundPersons = <Person>{}; // Use Set for deduplication
     
@@ -44,8 +44,8 @@ class SearchService {
     
     // Apply pagination
     final startIndex = resultOffset;
-    final endIndex = (startIndex + DEFAULT_PAGE_SIZE < resultList.length) 
-        ? startIndex + DEFAULT_PAGE_SIZE 
+    final endIndex = (startIndex + defaultPageSize < resultList.length) 
+        ? startIndex + defaultPageSize 
         : resultList.length;
     
     if (startIndex >= resultList.length) return [];
@@ -130,7 +130,7 @@ class SearchService {
   }) {
     if (searchTerms.isEmpty) return 0;
 
-    final resultLimit = limit ?? DEFAULT_RESULT_LIMIT;
+    final resultLimit = limit ?? defaultResultLimit;
     final foundPersons = <Person>{};
     
     for (final term in searchTerms) {

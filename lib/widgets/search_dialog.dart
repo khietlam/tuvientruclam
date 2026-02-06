@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import '../models/person.dart';
 import '../services/search_service.dart';
 import '../widgets/app_dialogs.dart';
@@ -194,7 +193,7 @@ class _SearchDialogState extends State<SearchDialog> {
             if (_totalResults > 0) ...[
               const SizedBox(height: 8),
               Text(
-                "Tìm thấy $_totalResults kết quả${_totalResults > SearchService.DEFAULT_PAGE_SIZE ? ' (hiển thị ${_currentResults.length})' : ''}",
+                "Tìm thấy $_totalResults kết quả${_totalResults > SearchService.defaultPageSize ? ' (hiển thị ${_currentResults.length})' : ''}",
                 style: AppTextStyles.getResponsiveStyle(context, 10, 16, Colors.white70),
               ),
             ],
@@ -222,7 +221,7 @@ class _SearchDialogState extends State<SearchDialog> {
             style: AppButtonStyles.primaryButton(),
             onPressed: () {
               setState(() {
-                _currentOffset += SearchService.DEFAULT_PAGE_SIZE;
+                _currentOffset += SearchService.defaultPageSize;
               });
               _performSearch(isLoadMore: true);
             },
