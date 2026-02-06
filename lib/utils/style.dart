@@ -1,14 +1,13 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class AppTextStyles {
   static TextStyle getResponsiveStyle(
-      BuildContext context,
-      double mobileSize,
-      double desktopSize, [
-        Color? color,
-      ]) {
+    BuildContext context,
+    double mobileSize,
+    double desktopSize, [
+    Color? color,
+  ]) {
     return TextStyle(
       color: color ?? Colors.black,
       fontSize: ResponsiveBreakpoints.of(context).isMobile

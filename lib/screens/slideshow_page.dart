@@ -271,7 +271,6 @@ class _SlideshowPageState extends State<SlideshowPage> {
                   ),
                 ),
               ),
-
             ],
           ),
         ),
