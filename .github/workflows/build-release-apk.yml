@@ -97,18 +97,23 @@ jobs:
         
     - name: Create Release (if on master branch)
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v1.0.${{ env.BUILD_NUMBER }}
-        release_name: Release v1.0.${{ env.BUILD_NUMBER }}
-        body: |
-          ## Release v1.0.${{ env.BUILD_NUMBER }}
+      run: |
+        # Install GitHub CLI
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update && sudo apt install gh -y
+        
+        # Authenticate with GitHub
+        echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+        
+        # Create release
+        gh release create v1.0.${{ env.BUILD_NUMBER }} \
+          --title "Release v1.0.${{ env.BUILD_NUMBER }}" \
+          --notes "## Release v1.0.${{ env.BUILD_NUMBER }}
           
           **Build Information:**
           - Build Number: ${{ env.BUILD_NUMBER }}
-          - Flutter Version: 3.19.6
+          - Flutter Version: 3.38.9
           - Build Date: ${{ github.event.head_commit.timestamp }}
           - Commit: ${{ github.sha }}
           
@@ -116,14 +121,12 @@ jobs:
           ${{ github.event.inputs.release_notes || 'Automated release build' }}
           
           **Download:**
-          - APK: `release-apk-v${{ env.BUILD_NUMBER }}.zip`
-          - App Bundle: `release-aab-v${{ env.BUILD_NUMBER }}.zip`
+          - APK: \`release-apk-v${{ env.BUILD_NUMBER }}.zip\` 
+          - App Bundle: \`release-aab-v${{ env.BUILD_NUMBER }}.zip\` 
           
           **Installation:**
           - For direct installation, download the APK file
-          - For Play Store submission, use the App Bundle (.aab) file
-        draft: false
-        prerelease: false
+          - For Play Store submission, use the App Bundle (.aab) file"
         
   test:
     runs-on: ubuntu-latest
