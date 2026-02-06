@@ -93,7 +93,7 @@ chmod +x scripts/*.sh
 
 ## 🚨 Important Notes
 
-1. **Flutter Version**: Currently set to `3.19.6` - update if needed
+1. **Flutter Version**: Currently set to `3.38.9` - update if needed
 2. **Java Version**: Uses JDK 17 for compatibility
 3. **Artifact Retention**: 
    - Release builds: 30 days

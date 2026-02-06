@@ -79,7 +79,7 @@ chmod +x scripts/*.sh
 ### Flutter Version
 Update in workflow files:
 ```yaml
-flutter-version: '3.19.6'  # Change to your version
+flutter-version: '3.38.9'  # Change to your version
 ```
 
 ### Build Variants

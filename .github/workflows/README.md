@@ -61,7 +61,7 @@ FIREBASE_TOKEN: Firebase deployment token
 ### 2. Flutter Version
 Update the Flutter version in workflow files:
 ```yaml
-flutter-version: '3.19.6'  # Change to your required version
+flutter-version: '3.38.9'  # Change to your required version
 ```
 
 ### 3. Branch Strategy
