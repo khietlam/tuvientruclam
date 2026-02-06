@@ -20,15 +20,11 @@ void main() {
 
   // Basic app integration test
   group('App Integration Tests', () {
-    testWidgets('App should build without crashing', (WidgetTester tester) async {
+    testWidgets('App should build without crashing', (
+      WidgetTester tester,
+    ) async {
       // Build our app and trigger a frame.
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Container(),
-          ),
-        ),
-      );
+      await tester.pumpWidget(MaterialApp(home: Scaffold(body: Container())));
 
       // Verify that the app builds successfully
       expect(find.byType(MaterialApp), findsOneWidget);

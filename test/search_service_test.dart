@@ -66,7 +66,7 @@ void main() {
           nguyenQuan: 'Hà Tây',
         ),
       ];
-      
+
       testPersonsMap = {for (var p in testPersons) p.id.toString(): p};
     });
 
@@ -104,82 +104,145 @@ void main() {
 
     group('searchPersons', () {
       test('should return empty list for empty search terms', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, []);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          [],
+        );
         expect(result, []);
       });
 
       test('should find person by exact ID', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['1001']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['1001'],
+        );
         expect(result.length, 1);
         expect(result.first.id, 1001);
         expect(result.first.theDanh, 'Phạm Thị Ngọc Lan');
       });
 
       test('should find person by theDanh (case insensitive)', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['hà']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['hà'],
+        );
         expect(result.length, 7); // Multiple persons have "hà" in their name
       });
 
       test('should find person by theDanh (diacritic insensitive)', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['Ha']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['Ha'],
+        );
         expect(result.length, 7); // Multiple persons have "ha" in their name
       });
 
       test('should find person by phapDanh', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['Ngọc']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['Ngọc'],
+        );
         expect(result.length, 1);
         expect(result.first.theDanh, 'Phạm Thị Ngọc Lan');
       });
 
       test('should find person by ngayMat', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['2023']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['2023'],
+        );
         expect(result.length, 5); // 5 persons with dates in 2023
       });
 
       test('should find person by huongTho', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['1']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['1'],
+        );
         expect(result.length, 4); // 4 persons with huongTho = 1
       });
 
       test('should find person by nguyenQuan', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['Hà Nội']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['Hà Nội'],
+        );
         expect(result.length, 1);
         expect(result.first.theDanh, 'Phạm Thị Ngọc Lan');
       });
 
       test('should find multiple persons matching term', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['Hà']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['Hà'],
+        );
         expect(result.length, 7); // All persons with "Hà" in any field
       });
 
       test('should find persons by multiple search terms', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['Hà', 'Hùng']);
-        expect(result.length, 7); // All persons with "Hà" (Hùng is not found in test data)
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['Hà', 'Hùng'],
+        );
+        expect(
+          result.length,
+          7,
+        ); // All persons with "Hà" (Hùng is not found in test data)
       });
 
       test('should not find non-existent person', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['9999']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['9999'],
+        );
         expect(result, []);
       });
 
       test('should not find non-existent term', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['NonExistent']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['NonExistent'],
+        );
         expect(result, []);
       });
 
       test('should handle null fields gracefully', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['Dung']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['Dung'],
+        );
         expect(result.length, 1);
         expect(result.first.theDanh, 'Đỗ Thị Dung');
       });
 
       test('should handle mixed case and diacritics', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['HA']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['HA'],
+        );
         expect(result.length, 7); // Should find all "Hà" variations
       });
 
       test('should not duplicate results for multiple matching fields', () {
-        final result = SearchService.searchPersons(testPersons, testPersonsMap, ['Hà']);
+        final result = SearchService.searchPersons(
+          testPersons,
+          testPersonsMap,
+          ['Hà'],
+        );
         final personIds = result.map((p) => p.id).toSet();
         expect(personIds.length, result.length); // No duplicates
       });
@@ -195,8 +258,10 @@ void main() {
           huongTho: null,
           nguyenQuan: null,
         );
-        
-        final result = SearchService.searchPersons([person], {'1008': person}, ['Test']);
+
+        final result = SearchService.searchPersons([person], {'1008': person}, [
+          'Test',
+        ]);
         expect(result.length, 1);
       });
 
@@ -209,8 +274,10 @@ void main() {
           huongTho: null,
           nguyenQuan: null,
         );
-        
-        final result = SearchService.searchPersons([person], {'1009': person}, ['Test']);
+
+        final result = SearchService.searchPersons([person], {'1009': person}, [
+          'Test',
+        ]);
         expect(result.length, 1);
       });
 
@@ -223,8 +290,10 @@ void main() {
           huongTho: null,
           nguyenQuan: null,
         );
-        
-        final result = SearchService.searchPersons([person], {'1010': person}, ['Test']);
+
+        final result = SearchService.searchPersons([person], {'1010': person}, [
+          'Test',
+        ]);
         expect(result.length, 1);
       });
 
@@ -237,8 +306,10 @@ void main() {
           huongTho: null,
           nguyenQuan: null,
         );
-        
-        final result = SearchService.searchPersons([person], {'1011': person}, ['Test']);
+
+        final result = SearchService.searchPersons([person], {'1011': person}, [
+          'Test',
+        ]);
         expect(result.length, 1);
       });
 
@@ -251,8 +322,10 @@ void main() {
           huongTho: null,
           nguyenQuan: null,
         );
-        
-        final result = SearchService.searchPersons([person], {'1012': person}, ['Test']);
+
+        final result = SearchService.searchPersons([person], {'1012': person}, [
+          'Test',
+        ]);
         expect(result.length, 1);
       });
     });

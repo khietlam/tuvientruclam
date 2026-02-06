@@ -23,7 +23,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.currentDuration.toString());
+    _controller = TextEditingController(
+      text: widget.currentDuration.toString(),
+    );
   }
 
   @override
@@ -67,16 +69,31 @@ class _SettingsDialogState extends State<SettingsDialog> {
           children: [
             Text(
               "Thời gian chuyển slide (giây):",
-              style: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white70),
+              style: AppTextStyles.getResponsiveStyle(
+                context,
+                12,
+                20,
+                Colors.white70,
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _controller,
               keyboardType: TextInputType.number,
-              style: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white),
+              style: AppTextStyles.getResponsiveStyle(
+                context,
+                12,
+                20,
+                Colors.white,
+              ),
               decoration: InputDecoration(
                 hintText: "Nhập số giây (1-60)",
-                hintStyle: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white38),
+                hintStyle: AppTextStyles.getResponsiveStyle(
+                  context,
+                  12,
+                  20,
+                  Colors.white38,
+                ),
                 border: const OutlineInputBorder(),
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white54),
@@ -102,7 +119,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 icon: const Icon(Icons.folder_open),
                 label: Text(
                   "Đổi thư mục dữ liệu",
-                  style: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white),
+                  style: AppTextStyles.getResponsiveStyle(
+                    context,
+                    12,
+                    20,
+                    Colors.white,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,

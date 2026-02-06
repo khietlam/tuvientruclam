@@ -72,12 +72,12 @@ class _SearchDialogState extends State<SearchDialog> {
 
     try {
       // Get total count first
-      final totalCount = await Future.microtask(() => 
-        SearchService.getTotalResultCount(
+      final totalCount = await Future.microtask(
+        () => SearchService.getTotalResultCount(
           widget.persons,
           widget.personsMap,
           searchTerms,
-        )
+        ),
       );
 
       // Get paginated results
@@ -106,7 +106,7 @@ class _SearchDialogState extends State<SearchDialog> {
       setState(() {
         _isSearching = false;
       });
-      
+
       if (mounted) {
         showDialog(
           context: context,
@@ -165,16 +165,31 @@ class _SearchDialogState extends State<SearchDialog> {
           children: [
             Text(
               "Nhập ID, thê danh, pháp danh, ngày mất, hướng thổ hoặc nguyên quán:",
-              style: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white70),
+              style: AppTextStyles.getResponsiveStyle(
+                context,
+                12,
+                20,
+                Colors.white70,
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
               autofocus: true,
               controller: _controller,
-              style: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white),
+              style: AppTextStyles.getResponsiveStyle(
+                context,
+                12,
+                20,
+                Colors.white,
+              ),
               decoration: InputDecoration(
                 hintText: "Ví dụ: 1023, Hữu Thành, Huu Thanh",
-                hintStyle: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white38),
+                hintStyle: AppTextStyles.getResponsiveStyle(
+                  context,
+                  12,
+                  20,
+                  Colors.white38,
+                ),
                 border: const OutlineInputBorder(),
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white54),
@@ -194,7 +209,12 @@ class _SearchDialogState extends State<SearchDialog> {
               const SizedBox(height: 8),
               Text(
                 "Tìm thấy $_totalResults kết quả${_totalResults > SearchService.defaultPageSize ? ' (hiển thị ${_currentResults.length})' : ''}",
-                style: AppTextStyles.getResponsiveStyle(context, 10, 16, Colors.white70),
+                style: AppTextStyles.getResponsiveStyle(
+                  context,
+                  10,
+                  16,
+                  Colors.white70,
+                ),
               ),
             ],
             if (_isSearching)

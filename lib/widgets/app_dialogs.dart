@@ -41,7 +41,12 @@ class AppDialogs {
           onPressed: onPressed,
           child: Text(
             buttonText,
-            style: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white),
+            style: AppTextStyles.getResponsiveStyle(
+              context,
+              12,
+              20,
+              Colors.white,
+            ),
           ),
         ),
       ],
@@ -71,7 +76,12 @@ class AppDialogs {
           onPressed: onPressed,
           child: Text(
             buttonText,
-            style: AppTextStyles.getResponsiveStyle(context, 12, 20, Colors.white),
+            style: AppTextStyles.getResponsiveStyle(
+              context,
+              12,
+              20,
+              Colors.white,
+            ),
           ),
         ),
       ],
@@ -127,14 +137,18 @@ class AppTextStyles {
   ]) {
     return TextStyle(
       color: color ?? Colors.black,
-      fontSize: ResponsiveBreakpoints.of(context).isMobile ? mobileSize : desktopSize,
+      fontSize: ResponsiveBreakpoints.of(context).isMobile
+          ? mobileSize
+          : desktopSize,
     );
   }
 
   static TextStyle getResponsiveTitleStyle(BuildContext context) {
-    return getResponsiveStyle(context, 24, 36).copyWith(
-      fontWeight: FontWeight.bold,
-    );
+    return getResponsiveStyle(
+      context,
+      24,
+      36,
+    ).copyWith(fontWeight: FontWeight.bold);
   }
 
   static TextStyle getResponsiveSubtitleStyle(BuildContext context) {
@@ -151,9 +165,7 @@ class AppButtonStyles {
     return TextButton.styleFrom(
       backgroundColor: Colors.white,
       foregroundColor: Colors.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 
@@ -161,9 +173,7 @@ class AppButtonStyles {
     return TextButton.styleFrom(
       backgroundColor: Colors.white54,
       foregroundColor: Colors.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 
@@ -171,9 +181,7 @@ class AppButtonStyles {
     return TextButton.styleFrom(
       backgroundColor: Colors.green,
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 
@@ -181,9 +189,7 @@ class AppButtonStyles {
     return TextButton.styleFrom(
       backgroundColor: Colors.red,
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 
@@ -192,9 +198,7 @@ class AppButtonStyles {
       backgroundColor: Colors.orange,
       foregroundColor: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       minimumSize: Size(
         ResponsiveBreakpoints.of(context).isMobile ? 200 : 300,
         50,

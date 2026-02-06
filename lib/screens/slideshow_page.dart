@@ -123,7 +123,8 @@ class _SlideshowPageState extends State<SlideshowPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => AppDialogs.loadingDialog(context, "Đang chọn thư mục..."),
+        builder: (_) =>
+            AppDialogs.loadingDialog(context, "Đang chọn thư mục..."),
       );
 
       final result = await DataService.selectDataFolder();
@@ -143,13 +144,13 @@ class _SlideshowPageState extends State<SlideshowPage> {
             () {
               Navigator.pop(context);
               // Restart the app to load new data
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const MainSlideshowPage()),
-            );
-          },
-        ),
-      );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const MainSlideshowPage()),
+              );
+            },
+          ),
+        );
       }
     } catch (e) {
       // Close loading dialog if open
@@ -181,7 +182,9 @@ class _SlideshowPageState extends State<SlideshowPage> {
         persons: widget.persons,
         personsMap: persons,
         onSingleResult: (person) {
-          final foundIndex = widget.persons.indexWhere((p) => p.id == person.id);
+          final foundIndex = widget.persons.indexWhere(
+            (p) => p.id == person.id,
+          );
           setState(() {
             index = foundIndex;
             paused = true;

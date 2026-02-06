@@ -37,14 +37,16 @@ void main() {
           nguyenQuan: null,
         ),
       ];
-      
+
       testPersonsMap = {for (var p in testPersons) p.id.toString(): p};
       singleResult = testPersons.first; // Initialize with first person
       multipleResults = [];
       dialogReopened = false;
     });
 
-    testWidgets('should display search dialog with correct UI elements', (WidgetTester tester) async {
+    testWidgets('should display search dialog with correct UI elements', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -52,7 +54,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should call onReopenSearch when search term limit exceeded', (WidgetTester tester) async {
+    testWidgets('should call onReopenSearch when search term limit exceeded', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -60,7 +64,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should show error dialog when no results found', (WidgetTester tester) async {
+    testWidgets('should show error dialog when no results found', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -68,7 +74,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should call onSingleResult when exactly one person found', (WidgetTester tester) async {
+    testWidgets('should call onSingleResult when exactly one person found', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -76,7 +84,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should call onMultipleResults when multiple persons found', (WidgetTester tester) async {
+    testWidgets('should call onMultipleResults when multiple persons found', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -84,7 +94,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should close dialog when cancel button pressed', (WidgetTester tester) async {
+    testWidgets('should close dialog when cancel button pressed', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -92,7 +104,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should handle empty search gracefully', (WidgetTester tester) async {
+    testWidgets('should handle empty search gracefully', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -100,7 +114,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should handle whitespace-only search gracefully', (WidgetTester tester) async {
+    testWidgets('should handle whitespace-only search gracefully', (
+      WidgetTester tester,
+    ) async {
       // Just verify that the test setup works
       expect(testPersons, isNotEmpty);
       expect(testPersonsMap, isNotEmpty);
@@ -108,7 +124,9 @@ void main() {
       expect(multipleResults, isEmpty);
     });
 
-    testWidgets('should work without onReopenSearch callback', (WidgetTester tester) async {
+    testWidgets('should work without onReopenSearch callback', (
+      WidgetTester tester,
+    ) async {
       // Just verify that creating the widget without onReopenSearch doesn't crash
       SearchDialog(
         persons: testPersons,
@@ -117,8 +135,11 @@ void main() {
         onMultipleResults: (persons) => multipleResults = persons,
         // No onReopenSearch callback
       );
-      
-      expect(dialogReopened, false); // Should remain false since callback wasn't provided
+
+      expect(
+        dialogReopened,
+        false,
+      ); // Should remain false since callback wasn't provided
     });
   });
 }

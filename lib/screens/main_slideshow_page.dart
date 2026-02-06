@@ -168,7 +168,12 @@ class _MainSlideshowPageState extends State<MainSlideshowPage> {
                   icon: const Icon(Icons.folder_open),
                   label: Text(
                     "Chọn thư mục dữ liệu",
-                    style: AppTextStyles.getResponsiveStyle(context, 14, 20, Colors.white),
+                    style: AppTextStyles.getResponsiveStyle(
+                      context,
+                      14,
+                      20,
+                      Colors.white,
+                    ),
                   ),
                   style: AppButtonStyles.elevatedButtonStyle(context),
                 ),
