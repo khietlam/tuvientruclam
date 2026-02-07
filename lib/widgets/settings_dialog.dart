@@ -134,241 +134,243 @@ class _SettingsDialogState extends State<SettingsDialog> {
       ),
       content: SizedBox(
         width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Thời gian chuyển slide (giây):",
-                    style: AppTextStyles.getResponsiveStyle(
-                      context,
-                      12,
-                      20,
-                      Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    color: Colors.black87,
-                    child: TextField(
-                      controller: _controller,
-                      keyboardType: TextInputType.number,
-                      style: AppTextStyles.getResponsiveStyle(
-                        context,
-                        12,
-                        20,
-                        Colors.white,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: "Nhập số giây (1-60)",
-                        hintStyle: AppTextStyles.getResponsiveStyle(
-                          context,
-                          12,
-                          20,
-                          Colors.white38,
-                        ),
-                        border: const OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white54),
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Phạm vi: 1-60 giây",
-                    style: AppTextStyles.getResponsiveStyle(
-                      context,
-                      12,
-                      18,
-                      Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-            // Unified cache management section
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      "Quản lý cache hình ảnh",
-                      style: AppTextStyles.getResponsiveStyle(
-                        context,
-                        12,
-                        20,
-                        Colors.white70,
-                      ).copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Auto clear cache dropdown
-                  Text(
-                    "Tự động xóa cache",
-                    style: AppTextStyles.getResponsiveStyle(
-                      context,
-                      12,
-                      20,
-                      Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    color: Colors.black87,
-                    child: DropdownButtonFormField<String>(
-                      initialValue: widget.autoClearCacheFrequency,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white54),
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                      ),
-                      dropdownColor: Colors.black87,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Thời gian chuyển slide (giây):",
                       style: AppTextStyles.getResponsiveStyle(
                         context,
                         12,
                         20,
                         Colors.white70,
                       ),
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'never',
-                          child: Text('Không bao giờ'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'daily',
-                          child: Text('Hàng ngày'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'weekly',
-                          child: Text('Hàng tuần'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'monthly',
-                          child: Text('Hàng tháng'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          widget.onAutoClearCacheChanged(value);
-                        }
-                      },
                     ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Cache statistics
-                  Text(
-                    "Thông tin cache",
-                    style: AppTextStyles.getResponsiveStyle(
-                      context,
-                      12,
-                      20,
-                      Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (_isLoadingCache)
-                    const CircularProgressIndicator(color: Colors.white54)
-                  else if (_cacheStats != null) ...[
-                    if (_cacheStats!['error'] != null)
-                      Text(
-                        "Lỗi: ${_cacheStats!['error']}",
-                        style: AppTextStyles.getResponsiveStyle(
-                          context,
-                          12,
-                          18,
-                          Colors.red,
-                        ),
-                      )
-                    else ...[
-                      Text(
-                        "Đã preload: ${_cacheStats!['preloadedCount'] ?? 0} ảnh",
-                        style: AppTextStyles.getResponsiveStyle(
-                          context,
-                          12,
-                          20,
-                          Colors.white70,
-                        ),
-                      ),
-                    ],
-                  ],
-                  const SizedBox(height: 16),
-
-                  // Clear cache button
-                  Center(
-                    child: ElevatedButton.icon(
-                      onPressed: _clearCache,
-                      icon: const Icon(Icons.delete_outline),
-                      label: Text(
-                        "Xóa cache ngay",
+                    const SizedBox(height: 16),
+                    Container(
+                      color: Colors.black87,
+                      child: TextField(
+                        controller: _controller,
+                        keyboardType: TextInputType.number,
                         style: AppTextStyles.getResponsiveStyle(
                           context,
                           12,
                           20,
                           Colors.white,
                         ),
-                      ),
-                      style: AppButtonStyles.elevatedButtonStyle(context)
-                          .copyWith(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.orange,
-                            ),
-                            foregroundColor: WidgetStateProperty.all(
-                              Colors.white,
-                            ),
+                        decoration: InputDecoration(
+                          hintText: "Nhập số giây (1-60)",
+                          hintStyle: AppTextStyles.getResponsiveStyle(
+                            context,
+                            12,
+                            20,
+                            Colors.white38,
                           ),
+                          border: const OutlineInputBorder(),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white54),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Phạm vi: 1-60 giây",
+                      style: AppTextStyles.getResponsiveStyle(
+                        context,
+                        12,
+                        18,
+                        Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+              // Unified cache management section
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        "Quản lý cache hình ảnh",
+                        style: AppTextStyles.getResponsiveStyle(
+                          context,
+                          12,
+                          20,
+                          Colors.white70,
+                        ).copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Auto clear cache dropdown
+                    Text(
+                      "Tự động xóa cache",
+                      style: AppTextStyles.getResponsiveStyle(
+                        context,
+                        12,
+                        20,
+                        Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      color: Colors.black87,
+                      child: DropdownButtonFormField<String>(
+                        initialValue: widget.autoClearCacheFrequency,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white54),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                        ),
+                        dropdownColor: Colors.black87,
+                        style: AppTextStyles.getResponsiveStyle(
+                          context,
+                          12,
+                          20,
+                          Colors.white70,
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'never',
+                            child: Text('Không bao giờ'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'daily',
+                            child: Text('Hàng ngày'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'weekly',
+                            child: Text('Hàng tuần'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'monthly',
+                            child: Text('Hàng tháng'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            widget.onAutoClearCacheChanged(value);
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Cache statistics
+                    Text(
+                      "Thông tin cache",
+                      style: AppTextStyles.getResponsiveStyle(
+                        context,
+                        12,
+                        20,
+                        Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_isLoadingCache)
+                      const CircularProgressIndicator(color: Colors.white54)
+                    else if (_cacheStats != null) ...[
+                      if (_cacheStats!['error'] != null)
+                        Text(
+                          "Lỗi: ${_cacheStats!['error']}",
+                          style: AppTextStyles.getResponsiveStyle(
+                            context,
+                            12,
+                            18,
+                            Colors.red,
+                          ),
+                        )
+                      else ...[
+                        Text(
+                          "Đã preload: ${_cacheStats!['preloadedCount'] ?? 0} ảnh",
+                          style: AppTextStyles.getResponsiveStyle(
+                            context,
+                            12,
+                            20,
+                            Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ],
+                    const SizedBox(height: 16),
+
+                    // Clear cache button
+                    Center(
+                      child: ElevatedButton.icon(
+                        onPressed: _clearCache,
+                        icon: const Icon(Icons.delete_outline),
+                        label: Text(
+                          "Xóa cache ngay",
+                          style: AppTextStyles.getResponsiveStyle(
+                            context,
+                            12,
+                            20,
+                            Colors.white,
+                          ),
+                        ),
+                        style: AppButtonStyles.elevatedButtonStyle(context)
+                            .copyWith(
+                              backgroundColor: WidgetStateProperty.all(
+                                Colors.orange,
+                              ),
+                              foregroundColor: WidgetStateProperty.all(
+                                Colors.white,
+                              ),
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    widget.onChangeDataFolder();
+                  },
+                  icon: const Icon(Icons.folder_open),
+                  label: Text(
+                    "Đổi thư mục dữ liệu",
+                    style: AppTextStyles.getResponsiveStyle(
+                      context,
+                      12,
+                      20,
+                      Colors.white,
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  widget.onChangeDataFolder();
-                },
-                icon: const Icon(Icons.folder_open),
-                label: Text(
-                  "Đổi thư mục dữ liệu",
-                  style: AppTextStyles.getResponsiveStyle(
-                    context,
-                    12,
-                    20,
-                    Colors.white,
-                  ),
+                  style: AppButtonStyles.elevatedButtonStyle(context),
                 ),
-                style: AppButtonStyles.elevatedButtonStyle(context),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [

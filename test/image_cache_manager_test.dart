@@ -1,23 +1,24 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuvientruclam/services/image_cache_manager.dart';
 
 void main() {
   group('ImageCacheManager Tests', () {
-    late ImageCacheManager cacheManager;
-
-    setUp(() {
-      cacheManager = ImageCacheManager();
-    });
+    // Note: ImageCacheManager initialization is done in individual tests
+    // to avoid async issues in setUp()
 
     group('Singleton Pattern', () {
-      test('should return same instance', () {
+      testWidgets('should return same instance', (WidgetTester tester) async {
         final instance1 = ImageCacheManager();
         final instance2 = ImageCacheManager();
 
-        expect(identical(instance1, instance2), isTrue);
+        expect(instance1, equals(instance2));
       });
 
-      test('should maintain state across instances', () {
+      testWidgets('should maintain state across instances', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(Container());
         final instance1 = ImageCacheManager();
         final instance2 = ImageCacheManager();
 
@@ -37,7 +38,7 @@ void main() {
 
     group('getCacheStats', () {
       test('should return cache statistics', () async {
-        final stats = await cacheManager.getCacheStats();
+        final stats = await ImageCacheManager().getCacheStats();
 
         expect(stats, isA<Map<String, dynamic>>());
         expect(stats.containsKey('size'), isTrue);
@@ -46,12 +47,13 @@ void main() {
       });
 
       test('should handle errors gracefully', () async {
-        final stats = await cacheManager.getCacheStats();
+        final stats = await ImageCacheManager().getCacheStats();
 
         expect(stats, isNotNull);
       });
 
       test('should return consistent format', () async {
+        final cacheManager = ImageCacheManager();
         final stats1 = await cacheManager.getCacheStats();
         final stats2 = await cacheManager.getCacheStats();
 
@@ -60,12 +62,19 @@ void main() {
     });
 
     group('clearCache', () {
-      test('should clear cache without errors', () async {
-        expect(() async => await cacheManager.clearCache(), returnsNormally);
+      testWidgets('should clear cache without errors', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(Container());
+        expect(
+          () async => await ImageCacheManager().clearCache(),
+          returnsNormally,
+        );
       });
 
-      test('should complete successfully', () async {
-        await cacheManager.clearCache();
+      testWidgets('should complete successfully', (WidgetTester tester) async {
+        await tester.pumpWidget(Container());
+        await ImageCacheManager().clearCache();
         // If we get here without exception, test passes
         expect(true, isTrue);
       });
@@ -74,14 +83,15 @@ void main() {
     group('preloadImages', () {
       test('should handle empty list', () async {
         expect(
-          () async => await cacheManager.preloadImages([]),
+          () async => await ImageCacheManager().preloadImages([]),
           returnsNormally,
         );
       });
 
       test('should handle single image path', () async {
         expect(
-          () async => await cacheManager.preloadImages(['/test/path/1.jpg']),
+          () async =>
+              await ImageCacheManager().preloadImages(['/test/path/1.jpg']),
           returnsNormally,
         );
       });
@@ -94,7 +104,7 @@ void main() {
         ];
 
         expect(
-          () async => await cacheManager.preloadImages(paths),
+          () async => await ImageCacheManager().preloadImages(paths),
           returnsNormally,
         );
       });
@@ -103,7 +113,7 @@ void main() {
         final paths = List.generate(10, (i) => '/test/path/$i.jpg');
 
         expect(
-          () async => await cacheManager.preloadImages(paths),
+          () async => await ImageCacheManager().preloadImages(paths),
           returnsNormally,
         );
       });
@@ -112,7 +122,7 @@ void main() {
         final paths = ['/invalid/path/1.jpg', '/invalid/path/2.jpg'];
 
         expect(
-          () async => await cacheManager.preloadImages(paths),
+          () async => await ImageCacheManager().preloadImages(paths),
           returnsNormally,
         );
       });
@@ -120,7 +130,7 @@ void main() {
 
     group('getCachedImageFile', () {
       test('should handle non-existent file', () async {
-        final result = await cacheManager.getCachedImageFile(
+        final result = await ImageCacheManager().getCachedImageFile(
           '/non/existent/path.jpg',
         );
 
@@ -128,14 +138,14 @@ void main() {
       });
 
       test('should handle invalid path', () async {
-        final result = await cacheManager.getCachedImageFile('');
+        final result = await ImageCacheManager().getCachedImageFile('');
 
         expect(result, isNull);
       });
 
       test('should not throw on error', () async {
         expect(
-          () async => await cacheManager.getCachedImageFile('/invalid'),
+          () async => await ImageCacheManager().getCachedImageFile('/invalid'),
           returnsNormally,
         );
       });
@@ -158,6 +168,7 @@ void main() {
 
     group('Error Resilience', () {
       test('should handle multiple concurrent operations', () async {
+        final cacheManager = ImageCacheManager();
         final futures = [
           cacheManager.getCacheStats(),
           cacheManager.getCacheStats(),
@@ -167,7 +178,11 @@ void main() {
         expect(() async => await Future.wait(futures), returnsNormally);
       });
 
-      test('should handle rapid cache clears', () async {
+      testWidgets('should handle rapid cache clears', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpWidget(Container());
+        final cacheManager = ImageCacheManager();
         await cacheManager.clearCache();
         await cacheManager.clearCache();
         await cacheManager.clearCache();
@@ -187,7 +202,7 @@ void main() {
 
         for (final path in paths) {
           expect(
-            () async => await cacheManager.getCachedImageFile(path),
+            () async => await ImageCacheManager().getCachedImageFile(path),
             returnsNormally,
           );
         }
@@ -202,7 +217,7 @@ void main() {
 
         for (final path in paths) {
           expect(
-            () async => await cacheManager.getCachedImageFile(path),
+            () async => await ImageCacheManager().getCachedImageFile(path),
             returnsNormally,
           );
         }
