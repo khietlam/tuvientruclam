@@ -11,8 +11,9 @@ Your Flutter CI/CD pipeline has been successfully configured with GitHub Actions
 - **`.github/workflows/deploy-play-store.yml`** - Play Store deployment
 
 ### 2. Build Scripts
-- **`scripts/build-release.sh`** - Local release build script
-- **`scripts/test.sh`** - Local testing script
+- **`scripts/build-release.sh`** / **`scripts/build-release.ps1`** - Local release build scripts (Bash/PowerShell)
+- **`scripts/test.sh`** / **`scripts/test.ps1`** - Local testing scripts (Bash/PowerShell)
+- **`scripts/security-scan.sh`** - Security vulnerability scanning
 - **`scripts/README.md`** - Documentation for all scripts
 
 ### 3. Documentation
@@ -80,15 +81,21 @@ git push origin master
 
 Use the provided scripts for local testing:
 
+**Unix-like systems (Linux, macOS, WSL):**
 ```bash
-# On Windows (Git Bash or WSL)
-./scripts/build-release.sh
-./scripts/test.sh
-
-# On macOS/Linux
+# Make scripts executable
 chmod +x scripts/*.sh
+
+# Build and test
 ./scripts/build-release.sh
 ./scripts/test.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+# Build and test
+.\scripts\build-release.ps1
+.\scripts\test.ps1
 ```
 
 ## 🚨 Important Notes

@@ -159,7 +159,7 @@ class _SearchDialogState extends State<SearchDialog> {
       surfaceTintColor: Colors.black,
       title: Text(
         "Tìm kiếm",
-        style: AppTextStyles.getResponsiveStyle(context, 20, 28),
+        style: AppTextStyles.getResponsiveStyle(context, 20, 28, Colors.white),
       ),
       content: SizedBox(
         width: double.maxFinite,
@@ -209,18 +209,6 @@ class _SearchDialogState extends State<SearchDialog> {
               "Mẹo: Có thể tìm kiếm có dấu hoặc không dấu",
               style: AppTextStyles.getResponsiveBodyStyle(context),
             ),
-            if (_totalResults > 0) ...[
-              const SizedBox(height: 8),
-              Text(
-                "Tìm thấy $_totalResults kết quả${_totalResults > SearchService.defaultPageSize ? ' (hiển thị ${_currentResults.length})' : ''}",
-                style: AppTextStyles.getResponsiveStyle(
-                  context,
-                  10,
-                  16,
-                  Colors.white70,
-                ),
-              ),
-            ],
             if (_isSearching)
               const Padding(
                 padding: EdgeInsets.only(top: 16),

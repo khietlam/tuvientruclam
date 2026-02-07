@@ -1,13 +1,14 @@
 # TuVienTrucLam
 
-A Flutter application for Buddhist temple management and information display.
+A Flutter application for Buddhist temple management and information display with advanced image caching and performance optimizations.
 
 ## 📱 About
 
 TuVienTrucLam is a comprehensive mobile application designed for Buddhist temples to manage and display information including:
 - Person/search functionality with Vietnamese diacritic support
-- Slideshow display for temple information
-- Settings and configuration management
+- High-performance slideshow display for 3000+ images
+- Advanced image caching and preloading system
+- Configurable settings with cache management
 - Data import/export capabilities
 
 ## 🚀 Features
@@ -15,22 +16,33 @@ TuVienTrucLam is a comprehensive mobile application designed for Buddhist temple
 ### Core Functionality
 - **Search System**: Advanced search with Vietnamese diacritic support
 - **Person Management**: Browse and search through person records
-- **Slideshow Display**: Automated content presentation
-- **Settings Management**: Configurable application settings
+- **Optimized Slideshow**: Automated content presentation with smooth transitions
+- **Smart Cache Management**: Configurable auto-clear cache system
+- **Settings Management**: Comprehensive application configuration
 - **Data Management**: Import and manage temple data
 
-### Technical Features
+### Performance Features
+- **Image Caching**: Flutter's built-in caching with memory optimization
+- **Smart Preloading**: Next 3 + previous image preloading
+- **Hero Animation Control**: Disabled for automatic, enabled for manual navigation
+- **Memory Management**: Bounded cache size (80 images, 200MB)
+- **Auto Cache Clearing**: Configurable daily/weekly/monthly cleanup
+
+### UI/UX Features
 - **Responsive Design**: Works across different screen sizes
+- **Modern Interface**: Clean settings dialog with unified cache management
+- **Smooth Animations**: Fade-in transitions and optimized performance
 - **Vietnamese Support**: Full diacritic handling in search and display
 - **Offline Capability**: Local data storage and processing
-- **Secure**: Built-in security scanning and best practices
 
 ## 🛠️ Tech Stack
 
 - **Framework**: Flutter 3.38.9
 - **Language**: Dart 3.10.3
 - **Architecture**: MVC pattern with service layer
-- **Testing**: Comprehensive unit and widget tests (79 tests)
+- **Caching**: Flutter's built-in Image.file caching
+- **Storage**: SharedPreferences for settings
+- **Testing**: Comprehensive unit and widget tests (15 test files)
 - **CI/CD**: GitHub Actions for automated builds and deployment
 
 ## 📦 Installation
@@ -84,8 +96,8 @@ flutter build appbundle --release
 ```
 
 ### Scripts
-- `scripts/build-release.sh` - Automated release build script
-- `scripts/test.sh` - Run all quality checks
+- `scripts/build-release.sh` / `scripts/build-release.ps1` - Automated release build scripts (Bash/PowerShell)
+- `scripts/test.sh` / `scripts/test.ps1` - Run all quality checks (Bash/PowerShell)
 - `scripts/security-scan.sh` - Security vulnerability scanning
 
 ## 🚀 CI/CD Pipeline
@@ -114,9 +126,16 @@ This project includes a comprehensive CI/CD pipeline using GitHub Actions:
 
 ### Code Quality
 - ✅ 0 analyzer issues
-- ✅ 79 passing tests
+- ✅ Comprehensive test coverage (15 test files)
 - ✅ 100% formatted code
 - ✅ Security scanning passed
+
+### Performance Optimizations
+- ✅ Image caching implemented for 3000+ images
+- ✅ Smart preloading system
+- ✅ Configurable auto-clear cache
+- ✅ Memory-efficient image loading
+- ✅ Hero animation optimization
 
 ### Build Status
 - ✅ Flutter 3.38.9 compatible

@@ -2,14 +2,28 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import '../models/person.dart';
-import 'image_display_widget.dart';
+import 'cached_image_widget.dart';
 import 'person_info_widget.dart';
 import '../screens/slideshow_page.dart';
+import '../services/image_preloader.dart';
+import 'layout_constants.dart';
 
-class GroupGridView extends StatelessWidget {
+class GroupGridView extends StatefulWidget {
   final List<Person> persons;
 
   const GroupGridView({super.key, required this.persons});
+
+  @override
+  State<GroupGridView> createState() => _GroupGridViewState();
+}
+
+class _GroupGridViewState extends State<GroupGridView> {
+  @override
+  void initState() {
+    super.initState();
+    // Preload grid images for better performance
+    ImagePreloader.preloadGridImages(widget.persons);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,25 +33,36 @@ class GroupGridView extends StatelessWidget {
 
     // Calculate available space after padding and system UI
     final availableWidth =
-        screenWidth - padding.left - padding.right - 32; // 32 for grid padding
+        screenWidth -
+        padding.left -
+        padding.right -
+        LayoutConstants.systemUIPadding;
     final availableHeight =
-        screenHeight - padding.top - padding.bottom - 100; // 100 for controls
+        screenHeight -
+        padding.top -
+        padding.bottom -
+        LayoutConstants.controlsHeight;
 
-    // Calculate item dimensions to fit 2 columns and 3 rows
-    final itemWidth = (availableWidth / 2) - 8; // 8 for spacing between columns
-    final itemHeight = (availableHeight / 3) - 8; // 8 for spacing between rows
+    // Calculate item dimensions to fit columns and rows
+    final itemWidth =
+        (availableWidth / LayoutConstants.gridColumnCount) -
+        LayoutConstants.gridSpacing;
+    final itemHeight =
+        (availableHeight / LayoutConstants.gridRowCount) -
+        LayoutConstants.gridSpacing;
 
     return Scrollbar(
-      thumbVisibility: persons.length > 6,
-      thickness: 8,
-      radius: const Radius.circular(4),
+      thumbVisibility:
+          widget.persons.length > LayoutConstants.scrollbarVisibilityThreshold,
+      thickness: LayoutConstants.scrollbarThickness,
+      radius: const Radius.circular(LayoutConstants.scrollbarRadius),
       child: GridView.count(
-        crossAxisCount: 2,
-        padding: EdgeInsets.all(16),
+        crossAxisCount: LayoutConstants.gridColumnCount,
+        padding: const EdgeInsets.all(LayoutConstants.gridPadding),
         childAspectRatio: itemWidth / itemHeight,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        children: persons.map((p) {
+        mainAxisSpacing: LayoutConstants.gridSpacing,
+        crossAxisSpacing: LayoutConstants.gridSpacing,
+        children: widget.persons.map((p) {
           return GestureDetector(
             onTap: () {
               showDialog(
@@ -45,15 +70,21 @@ class GroupGridView extends StatelessWidget {
                 builder: (_) => Dialog(
                   backgroundColor: Colors.transparent,
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: MediaQuery.of(context).size.height * 0.8,
+                    width:
+                        MediaQuery.of(context).size.width *
+                        LayoutConstants.dialogWidthRatio,
+                    height:
+                        MediaQuery.of(context).size.height *
+                        LayoutConstants.dialogHeightRatio,
                     child: Card(
                       color: Colors.black87,
                       shadowColor: Colors.black,
                       surfaceTintColor: Colors.black,
                       elevation: 8,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(
+                          LayoutConstants.dialogBorderRadius,
+                        ),
                       ),
                       child: Column(
                         children: [
@@ -62,9 +93,13 @@ class GroupGridView extends StatelessWidget {
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.grey[900],
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(
+                                  LayoutConstants.dialogBorderRadius,
+                                ),
+                                topRight: Radius.circular(
+                                  LayoutConstants.dialogBorderRadius,
+                                ),
                               ),
                             ),
                             child: Row(
@@ -136,14 +171,20 @@ class GroupGridView extends StatelessWidget {
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                         color: Colors.grey[900],
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(16),
-                                          topRight: Radius.circular(16),
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(
+                                            LayoutConstants.dialogBorderRadius,
+                                          ),
+                                          topRight: Radius.circular(
+                                            LayoutConstants.dialogBorderRadius,
+                                          ),
                                         ),
                                       ),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: ImageDisplayWidget(
+                                        borderRadius: BorderRadius.circular(
+                                          LayoutConstants.cardBorderRadius,
+                                        ),
+                                        child: CachedImageWidget(
                                           id: p.id,
                                           heroTag: 'grid_${p.id}',
                                         ),
@@ -172,7 +213,9 @@ class GroupGridView extends StatelessWidget {
               shadowColor: Colors.black,
               surfaceTintColor: Colors.black,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(
+                  LayoutConstants.cardBorderRadius,
+                ),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -186,11 +229,15 @@ class GroupGridView extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.grey[900],
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
+                            topLeft: Radius.circular(
+                              LayoutConstants.cardBorderRadius,
+                            ),
+                            topRight: Radius.circular(
+                              LayoutConstants.cardBorderRadius,
+                            ),
                           ),
                         ),
-                        child: ImageDisplayWidget(
+                        child: CachedImageWidget(
                           id: p.id,
                           heroTag: 'grid_${p.id}',
                         ),
@@ -202,8 +249,12 @@ class GroupGridView extends StatelessWidget {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(12),
-                            bottomRight: Radius.circular(12),
+                            bottomLeft: Radius.circular(
+                              LayoutConstants.cardBorderRadius,
+                            ),
+                            bottomRight: Radius.circular(
+                              LayoutConstants.cardBorderRadius,
+                            ),
                           ),
                           color: Colors.grey[900],
                         ),

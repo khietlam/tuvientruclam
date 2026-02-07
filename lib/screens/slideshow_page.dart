@@ -6,16 +6,20 @@ import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../models/person.dart';
 import '../utils/style.dart';
 import '../widgets/icon_button_widget.dart';
-import '../widgets/image_display_widget.dart';
+import '../widgets/cached_image_widget.dart';
 import '../widgets/person_info_widget.dart';
 import '../widgets/group_grid_view_widget.dart';
 import '../widgets/search_dialog.dart';
 import '../widgets/settings_dialog.dart';
 import '../widgets/app_dialogs.dart';
 import '../services/data_service.dart';
+import '../services/image_preloader.dart';
+import '../services/cache_config_service.dart';
+import '../widgets/layout_constants.dart';
 import 'main_slideshow_page.dart';
 
 class SlideshowPage extends StatefulWidget {
@@ -30,6 +34,7 @@ class SlideshowPage extends StatefulWidget {
 class _SlideshowPageState extends State<SlideshowPage> {
   int index = 0;
   bool paused = false;
+  bool isManualNavigation = false;
 
   Map<String, Person> persons = {};
   List<Person> selected = [];
@@ -41,6 +46,7 @@ class _SlideshowPageState extends State<SlideshowPage> {
 
   // Settings variables
   int slideshowDuration = 5; // Default 5 seconds
+  String autoClearCacheFrequency = 'daily'; // Default daily
 
   final _aspectTolerance = 0.00;
   final _selectedCamera = 1;
@@ -63,8 +69,18 @@ class _SlideshowPageState extends State<SlideshowPage> {
   void initState() {
     super.initState();
     persons = {for (var p in widget.persons) p.id.toString(): p};
+    _loadSettings();
     startSlideshow();
     autoHideControls();
+    // Start preloading images for smooth transitions
+    _preloadInitialImages();
+  }
+
+  Future<void> _loadSettings() async {
+    final frequency = await CacheConfigService.getCurrentFrequency();
+    setState(() {
+      autoClearCacheFrequency = frequency;
+    });
   }
 
   void startSlideshow() {
@@ -76,16 +92,62 @@ class _SlideshowPageState extends State<SlideshowPage> {
     });
   }
 
-  void _animateToNextSlide() {
+  void _animateToNextSlide({bool isManual = false}) {
+    if (isManual) {
+      setState(() {
+        isManualNavigation = true;
+      });
+      // Reset to automatic after a delay
+      Future.delayed(Duration(seconds: slideshowDuration), () {
+        if (mounted) {
+          setState(() {
+            isManualNavigation = false;
+          });
+        }
+      });
+    }
+
     setState(() {
       index = (index + 1) % widget.persons.length;
     });
+    // Preload next images
+    _preloadNextImages();
   }
 
-  void _animateToPreviousSlide() {
+  void _animateToPreviousSlide({bool isManual = false}) {
+    if (isManual) {
+      setState(() {
+        isManualNavigation = true;
+      });
+      // Reset to automatic after a delay
+      Future.delayed(Duration(seconds: slideshowDuration), () {
+        if (mounted) {
+          setState(() {
+            isManualNavigation = false;
+          });
+        }
+      });
+    }
+
     setState(() {
       index = (index - 1 + widget.persons.length) % widget.persons.length;
     });
+    // Preload previous images
+    _preloadNextImages();
+  }
+
+  /// Preload initial images when slideshow starts
+  void _preloadInitialImages() {
+    if (widget.persons.isNotEmpty) {
+      ImagePreloader.preloadNextImages(widget.persons, index);
+    }
+  }
+
+  /// Preload next images for smooth transitions
+  void _preloadNextImages() {
+    if (widget.persons.isNotEmpty) {
+      ImagePreloader.preloadNextImages(widget.persons, index);
+    }
   }
 
   void showSettings() {
@@ -101,13 +163,21 @@ class _SlideshowPageState extends State<SlideshowPage> {
           startSlideshow(); // Restart with new duration
         },
         onChangeDataFolder: _changeDataFolder,
+        autoClearCacheFrequency: autoClearCacheFrequency,
+        onAutoClearCacheChanged: (frequency) async {
+          setState(() {
+            autoClearCacheFrequency = frequency;
+          });
+          // Update the global cache config
+          await CacheConfigService.updateFrequency(frequency);
+        },
       ),
     );
   }
 
   void autoHideControls() {
     hideTimer?.cancel();
-    hideTimer = Timer(const Duration(seconds: 10), () {
+    hideTimer = Timer(LayoutConstants.controlsHideDelay, () {
       if (mounted) {
         setState(() => showControls = false);
       }
@@ -213,6 +283,9 @@ class _SlideshowPageState extends State<SlideshowPage> {
       context: context,
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
+        elevation: 8,
+        shadowColor: Colors.black,
+        surfaceTintColor: Colors.black,
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -221,6 +294,7 @@ class _SlideshowPageState extends State<SlideshowPage> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 'Mã QR: ${p.theDanh}',
@@ -241,10 +315,16 @@ class _SlideshowPageState extends State<SlideshowPage> {
                 child: QrImageView(
                   data: p.id.toString(),
                   version: QrVersions.auto,
-                  size: 300.0,
+                  size: ResponsiveBreakpoints.of(context).isMobile
+                      ? 220.0
+                      : 300,
                   backgroundColor: Colors.white,
                   embeddedImage: AssetImage('assets/round_logo.png'),
-                  embeddedImageStyle: QrEmbeddedImageStyle(size: Size(80, 80)),
+                  embeddedImageStyle: QrEmbeddedImageStyle(
+                    size: ResponsiveBreakpoints.of(context).isMobile
+                        ? Size(40, 40)
+                        : Size(60, 60),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -459,10 +539,10 @@ class _SlideshowPageState extends State<SlideshowPage> {
                     ),
                   );
                 },
-                child: ImageDisplayWidget(
+                child: CachedImageWidget(
                   key: ValueKey<String>(p.id.toString()),
                   id: p.id,
-                  heroTag: 'slideshow_${p.id}',
+                  heroTag: isManualNavigation ? 'slideshow_${p.id}' : null,
                 ),
               ),
             ),
@@ -569,7 +649,7 @@ class _SlideshowPageState extends State<SlideshowPage> {
                         onTap: () {
                           setState(() {
                             paused = true;
-                            _animateToPreviousSlide();
+                            _animateToPreviousSlide(isManual: true);
                           });
                         },
                         heroTag: 'previous_button',
@@ -579,7 +659,7 @@ class _SlideshowPageState extends State<SlideshowPage> {
                         onTap: () {
                           setState(() {
                             paused = true;
-                            _animateToNextSlide();
+                            _animateToNextSlide(isManual: true);
                           });
                         },
                         heroTag: 'next_button',

@@ -1,8 +1,13 @@
 # CI/CD Scripts
 
-## Build Scripts Directory
+This directory contains build and testing scripts for both Unix-like systems (Bash) and Windows (PowerShell).
 
-### build-release.sh
+## Available Scripts
+
+### Build Scripts
+
+#### build-release.sh / build-release.ps1
+Cross-platform release build scripts.
 #!/bin/bash
 set -e
 
@@ -47,7 +52,12 @@ echo "Build completed successfully!"
 echo "APK: build/app/outputs/flutter-apk/app-release.apk"
 echo "AAB: build/app/outputs/bundle/release/app-release.aab"
 
-### test.sh
+**PowerShell version (build-release.ps1)**: Same functionality for Windows environments.
+
+### Test Scripts
+
+#### test.sh / test.ps1
+Cross-platform testing scripts.
 #!/bin/bash
 set -e
 
@@ -70,7 +80,11 @@ dart format --set-exit-if-changed .
 
 echo "All tests passed!"
 
-### deploy-play-store.sh
+**PowerShell version (test.ps1)**: Same functionality for Windows environments with additional features like detailed test output.
+
+### Security Scripts
+
+#### security-scan.sh
 #!/bin/bash
 set -e
 
@@ -147,3 +161,35 @@ rm -f build/app/outputs/bundle/release/*.sha256
 rm -f test-report.json
 
 echo "Clean completed!"
+
+## Usage
+
+### On Unix-like systems (Linux, macOS, WSL)
+```bash
+# Make scripts executable
+chmod +x scripts/*.sh
+
+# Run build
+./scripts/build-release.sh
+
+# Run tests
+./scripts/test.sh
+
+# Run security scan
+./scripts/security-scan.sh
+```
+
+### On Windows (PowerShell)
+```powershell
+# Run build
+.\scripts\build-release.ps1
+
+# Run tests
+.\scripts\test.ps1
+```
+
+## Notes
+- Bash scripts (.sh) work on Linux, macOS, and Windows Subsystem for Linux (WSL)
+- PowerShell scripts (.ps1) are optimized for Windows environments
+- Both versions provide the same core functionality
+- PowerShell scripts may include additional Windows-specific features

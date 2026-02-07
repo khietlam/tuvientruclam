@@ -2,19 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:tuvientruclam/screens/main_slideshow_page.dart';
+import 'package:tuvientruclam/services/cache_config_service.dart';
 
+/// Main entry point for the application
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await _initializeApp();
+  runApp(const TuVienTrucLamApp());
+}
+
+/// Initialize app settings and configurations
+Future<void> _initializeApp() async {
+  // Set device orientation
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
+  // Enable immersive mode
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
+  // Configure image cache
+  _configureImageCache();
+
+  // Setup auto-clear cache based on saved preference
+  await CacheConfigService.initializeFromPreferences();
+}
+
+/// Configure Flutter's image cache settings
+void _configureImageCache() {
   PaintingBinding.instance.imageCache
     ..maximumSize = 80
-    ..maximumSizeBytes = 200 << 20;
-
-  runApp(const TuVienTrucLamApp());
+    ..maximumSizeBytes = 200 << 20; // 200MB
 }
 
 class TuVienTrucLamApp extends StatelessWidget {
@@ -34,23 +51,7 @@ class TuVienTrucLamApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontFamily: 'Roboto'),
-          bodyMedium: TextStyle(fontFamily: 'Roboto'),
-          bodySmall: TextStyle(fontFamily: 'Roboto'),
-          displayLarge: TextStyle(fontFamily: 'Roboto'),
-          displayMedium: TextStyle(fontFamily: 'Roboto'),
-          displaySmall: TextStyle(fontFamily: 'Roboto'),
-          headlineLarge: TextStyle(fontFamily: 'Roboto'),
-          headlineMedium: TextStyle(fontFamily: 'Roboto'),
-          headlineSmall: TextStyle(fontFamily: 'Roboto'),
-          titleLarge: TextStyle(fontFamily: 'Roboto'),
-          titleMedium: TextStyle(fontFamily: 'Roboto'),
-          titleSmall: TextStyle(fontFamily: 'Roboto'),
-          labelLarge: TextStyle(fontFamily: 'Roboto'),
-          labelMedium: TextStyle(fontFamily: 'Roboto'),
-          labelSmall: TextStyle(fontFamily: 'Roboto'),
-        ),
+        textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Roboto'),
       ),
       home: const MainSlideshowPage(),
     );

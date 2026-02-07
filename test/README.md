@@ -4,41 +4,103 @@ This project includes comprehensive test coverage for all major components.
 
 ## Test Structure
 
+### Model Tests
+- **person_test.dart** - Tests for the Person model:
+  - Constructor with all fields
+  - Constructor with partial fields
+  - JSON parsing (fromJson)
+  - Edge cases (Vietnamese diacritics, long strings, special characters)
+  - Null field handling
+
 ### Service Tests
-- **search_service_test.dart** - Tests for the SearchService class including:
+- **data_service_test.dart** - Tests for the DataService class:
+  - JSON parsing and data loading
+  - Path validation
+  - Error handling
+  - UTF-8 encoding
+  - Data integrity
+  - Special characters handling
+
+- **image_cache_manager_test.dart** - Tests for the ImageCacheManager:
+  - Singleton pattern
+  - Cache configuration
+  - Cache statistics
+  - Cache clearing
+  - Image preloading
+  - Error resilience
+  - Path handling
+
+- **image_preloader_test.dart** - Tests for the ImagePreloader service:
+  - Preloading next images
+  - Preloading grid images
+  - Preload tracking
+  - Statistics retrieval
+  - Edge cases and performance
+
+- **permission_service_test.dart** - Tests for the PermissionService:
+  - Storage permission requests
+  - Platform handling
+  - Error resilience
+
+- **search_service_test.dart** - Tests for the SearchService class:
   - Search term parsing
   - Person search by various fields (ID, name, dates, etc.)
   - Diacritic handling
   - Edge cases and error conditions
+
+### Utils Tests
+- **style_test.dart** - Tests for styling utilities:
+  - Responsive text styles
+  - Button styles (primary, cancel, success, error)
+  - Style consistency
+  - Responsive sizing
 
 ### Widget Tests
 - **app_dialogs_test.dart** - Tests for reusable dialog components:
   - Loading dialogs
   - Success/error dialogs
   - Confirmation dialogs
-  - Text styles and button styles
+  - Dialog styling consistency
+
+- **icon_button_widget_test.dart** - Tests for the IconButtonWidget:
+  - Rendering with required properties
+  - Tap callbacks
+  - Custom colors
+  - Hero tags
+  - Multiple taps
+
+- **person_info_widget_test.dart** - Tests for the PersonInfoWidget:
+  - Display with all fields
+  - Display with partial fields
+  - Container styling
+  - Scrollability
+  - Vietnamese diacritics
+  - Edge cases
 
 - **search_dialog_test.dart** - Tests for the SearchDialog widget:
   - UI rendering
   - User interactions
   - Search functionality
   - Error handling
+  - Loading states
 
 - **settings_dialog_test.dart** - Tests for the SettingsDialog widget:
   - Duration input validation
   - Data folder change functionality
   - Form validation
+  - Cache management
+  - Auto clear cache settings
 
+### Screen Tests
 - **main_slideshow_page_test.dart** - Tests for the main screen:
+  - Widget creation
   - Loading states
-  - Error handling
-  - User interactions
+  - Scaffold structure
 
 - **slideshow_page_test.dart** - Tests for the slideshow functionality:
-  - Navigation controls
-  - Play/pause functionality
-  - Search integration
-  - Grid view
+  - Widget creation with persons
+  - Empty persons list handling
+  - Scaffold structure
 
 ## Running Tests
 

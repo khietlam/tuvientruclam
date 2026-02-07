@@ -48,6 +48,7 @@ KEY_PASSWORD=your_key_password
 ### Local Scripts
 Use the provided scripts for local development:
 
+**Unix-like systems (Linux, macOS, WSL):**
 ```bash
 # Make scripts executable
 chmod +x scripts/*.sh
@@ -57,9 +58,15 @@ chmod +x scripts/*.sh
 
 # Run tests locally
 ./scripts/test.sh
+```
 
-# Clean project
-./scripts/clean.sh
+**Windows (PowerShell):**
+```powershell
+# Build release locally
+.\scripts\build-release.ps1
+
+# Run tests locally
+.\scripts\test.ps1
 ```
 
 ## 📱 Artifact Downloads
