@@ -32,6 +32,7 @@ class _CachedImageWidgetState extends State<CachedImageWidget> {
 
     final jpg = File('$imagePath/${widget.id}.jpg');
     final jpeg = File('$imagePath/${widget.id}.jpeg');
+    final png = File('$imagePath/${widget.id}.png');
 
     if (await jpg.exists()) {
       setState(() {
@@ -40,6 +41,10 @@ class _CachedImageWidgetState extends State<CachedImageWidget> {
     } else if (await jpeg.exists()) {
       setState(() {
         _imageFile = jpeg;
+      });
+    } else if (await png.exists()) {
+      setState(() {
+        _imageFile = png;
       });
     }
   }
