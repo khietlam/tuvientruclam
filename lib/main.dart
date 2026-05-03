@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:tuvientruclam/screens/main_slideshow_page.dart';
 import 'package:tuvientruclam/services/cache_config_service.dart';
 
@@ -19,6 +20,9 @@ Future<void> _initializeApp() async {
 
   // Enable immersive mode
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+  // Keep screen awake (prevent auto screen off on tablets)
+  await WakelockPlus.enable();
 
   // Configure image cache
   _configureImageCache();

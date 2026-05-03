@@ -647,7 +647,10 @@ class _SlideshowPageState extends State<SlideshowPage> {
   }
 }
 
-/// Full-screen QR scanner backed by `mobile_scanner` (CameraX / AVFoundation).
+/// Full-screen QR scanner backed by `mobile_scanner` (CameraX on Android,
+/// AVFoundation on iOS). Keeps the front camera and applies a rotation
+/// fallback when a portrait layout receives a landscape preview buffer
+/// (some Android tablets), while using cover-fit to avoid tiny preview.
 /// Pops with the first non-empty raw value detected, or `null` if cancelled.
 class _QrScannerScreen extends StatefulWidget {
   const _QrScannerScreen();
@@ -657,33 +660,55 @@ class _QrScannerScreen extends StatefulWidget {
 }
 
 class _QrScannerScreenState extends State<_QrScannerScreen> {
-  final MobileScannerController _controller = MobileScannerController(
-    formats: const [BarcodeFormat.qrCode],
-    detectionSpeed: DetectionSpeed.noDuplicates,
-    facing: CameraFacing.front,
-    // Force a standard 16:9 sensor resolution. Without this, some front
-    // cameras report a non-standard size that the widget's internal
-    // FittedBox can't scale to fill the screen.
-    cameraResolution: const Size(1920, 1080),
-    // Pick the wide (standard) lens. Some devices have an ultrawide front
-    // sensor as the default — that distorts the preview aspect ratio.
-    lensType: CameraLensType.any,
-  );
+  late final MobileScannerController _controller;
+  StreamSubscription<BarcodeCapture>? _barcodeSub;
   bool _popped = false;
+  bool _flashOn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = MobileScannerController(
+      autoStart: false,
+      facing: CameraFacing.front,
+      formats: [BarcodeFormat.qrCode],
+      torchEnabled: false,
+    );
+    _barcodeSub = _controller.barcodes.listen(_onDetect);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      try {
+        await _controller.start();
+      } catch (_) {
+        // Ignore transient startup errors. The next open will retry.
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _barcodeSub?.cancel();
     _controller.dispose();
     super.dispose();
   }
 
   void _onDetect(BarcodeCapture capture) {
     if (_popped || !mounted) return;
-    if (capture.barcodes.isEmpty) return;
-    final raw = capture.barcodes.first.rawValue;
+    final barcode = capture.barcodes.firstOrNull;
+    final raw = barcode?.rawValue;
     if (raw == null || raw.isEmpty) return;
     _popped = true;
     Navigator.of(context).pop(raw);
+  }
+
+  Future<void> _toggleFlash() async {
+    try {
+      await _controller.toggleTorch();
+      if (!mounted) return;
+      setState(() => _flashOn = !_flashOn);
+    } catch (_) {
+      // Torch unsupported — ignore.
+    }
   }
 
   @override
@@ -692,12 +717,30 @@ class _QrScannerScreenState extends State<_QrScannerScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Positioned.fill(
+          ValueListenableBuilder<MobileScannerState>(
+            valueListenable: _controller,
             child: MobileScanner(
               controller: _controller,
-              onDetect: _onDetect,
               fit: BoxFit.cover,
             ),
+            builder: (context, state, scannerChild) {
+              final viewport = MediaQuery.sizeOf(context);
+              final isViewportPortrait = viewport.height >= viewport.width;
+              final hasPreviewSize =
+                  state.size.width > 0 && state.size.height > 0;
+              final isPreviewLandscape =
+                  hasPreviewSize && state.size.width > state.size.height;
+
+              final shouldRotatePreview =
+                  state.isInitialized &&
+                  isViewportPortrait &&
+                  isPreviewLandscape;
+
+              return RotatedBox(
+                quarterTurns: shouldRotatePreview ? 1 : 0,
+                child: scannerChild,
+              );
+            },
           ),
           SafeArea(
             child: Padding(
@@ -710,24 +753,10 @@ class _QrScannerScreenState extends State<_QrScannerScreen> {
                     onTap: () => Navigator.of(context).pop(),
                     heroTag: 'qr_scanner_close_button',
                   ),
-                  ValueListenableBuilder<MobileScannerState>(
-                    valueListenable: _controller,
-                    builder: (context, state, _) {
-                      // Front cameras typically have no torch. Hide the
-                      // button until the controller is initialized AND
-                      // reports torch is available — also avoids the
-                      // `controllerUninitialized` crash if the user taps
-                      // before camera startup completes.
-                      final available = state.isInitialized &&
-                          state.torchState != TorchState.unavailable;
-                      if (!available) return const SizedBox.shrink();
-                      final on = state.torchState == TorchState.on;
-                      return IconButtonWidget(
-                        icon: on ? Icons.flash_on : Icons.flash_off,
-                        onTap: () => _controller.toggleTorch(),
-                        heroTag: 'qr_scanner_torch_button',
-                      );
-                    },
+                  IconButtonWidget(
+                    icon: _flashOn ? Icons.flash_on : Icons.flash_off,
+                    onTap: _toggleFlash,
+                    heroTag: 'qr_scanner_torch_button',
                   ),
                 ],
               ),
