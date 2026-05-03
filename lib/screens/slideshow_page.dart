@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import '../models/person.dart';
@@ -19,6 +17,7 @@ import '../widgets/app_dialogs.dart';
 import '../services/data_service.dart';
 import '../services/image_preloader.dart';
 import '../services/cache_config_service.dart';
+import '../services/permission_service.dart';
 import '../widgets/layout_constants.dart';
 import 'main_slideshow_page.dart';
 
@@ -48,15 +47,8 @@ class _SlideshowPageState extends State<SlideshowPage> {
   int slideshowDuration = 5; // Default 5 seconds
   String autoClearCacheFrequency = 'daily'; // Default daily
 
-  final _aspectTolerance = 0.00;
-  final _selectedCamera = 1;
-  final _useAutoFocus = true;
-  final _autoEnableFlash = false;
-
-  static final _possibleFormats = BarcodeFormat.values.toList()
-    ..removeWhere((e) => e == BarcodeFormat.unknown);
-
-  final selectedFormats = [..._possibleFormats];
+  // Re-entry guard: prevents the scan screen from being pushed twice on a double-tap.
+  bool _scanInProgress = false;
 
   @override
   void dispose() {
@@ -370,99 +362,61 @@ class _SlideshowPageState extends State<SlideshowPage> {
   }
 
   Future<void> scanQRCode() async {
-    // Check if running on emulator
-    final isEmulator = await _isEmulator();
-    if (isEmulator) {
-      showSearch();
-      return;
-    }
-
+    if (_scanInProgress) return;
+    _scanInProgress = true;
+    // Pause the slideshow while the scanner is on top, so the off-screen
+    // page doesn't keep advancing slides and preloading images while the
+    // camera pipeline needs CPU/decoder bandwidth.
+    paused = true;
     try {
-      // Check camera permission first
-      var cameraStatus = await Permission.camera.status;
-      if (!cameraStatus.isGranted) {
-        cameraStatus = await Permission.camera.request();
-        if (!cameraStatus.isGranted) {
-          if (mounted) {
-            showDialog(
-              context: context,
-              builder: (_) => AppDialogs.errorDialog(
-                context,
-                "Lỗi!",
-                'Camera permission is required to scan QR codes',
-                "OK",
-                () => Navigator.pop(context),
-              ),
-            );
-          }
-          return;
-        }
+      if (await _isEmulator()) {
+        if (mounted) showSearch();
+        return;
       }
 
-      final result = await BarcodeScanner.scan(
-        options: ScanOptions(
-          strings: {
-            'cancel': 'Cancel',
-            'flash_on': 'Flash on',
-            'flash_off': 'Flash off',
-          },
-          restrictFormat: selectedFormats,
-          useCamera: _selectedCamera,
-          autoEnableFlash: _autoEnableFlash,
-          android: AndroidOptions(
-            aspectTolerance: _aspectTolerance,
-            useAutoFocus: _useAutoFocus,
-          ),
-        ),
+      final granted = await PermissionService.requestCameraPermission();
+      if (!granted) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (_) => AppDialogs.errorDialog(
+              context,
+              "Lỗi!",
+              'Camera permission is required to scan QR codes',
+              "OK",
+              () => Navigator.pop(context),
+            ),
+          );
+        }
+        return;
+      }
+
+      if (!mounted) return;
+      final raw = await Navigator.of(context).push<String>(
+        MaterialPageRoute(builder: (_) => const _QrScannerScreen()),
       );
 
-      debugPrint('QR Scan result: ${result.rawContent}');
+      if (raw == null || raw.isEmpty) return;
+      debugPrint('QR Scan result: $raw');
 
-      if (result.rawContent.isNotEmpty) {
-        final id = int.tryParse(result.rawContent);
-        if (id == null) return;
+      final id = int.tryParse(raw);
+      if (id == null) return;
 
-        final found = widget.persons.indexWhere((p) => p.id == id);
+      final found = widget.persons.indexWhere((p) => p.id == id);
+      debugPrint('Found index: $found');
 
-        debugPrint('Found index: $found');
-
-        if (found != -1) {
-          setState(() {
-            index = found;
-            paused = true;
-          });
-        } else {
-          if (mounted) {
-            showDialog(
-              context: context,
-              builder: (_) => AppDialogs.errorDialog(
-                context,
-                "Lỗi!",
-                "Không tìm thấy ID",
-                "Đóng",
-                () => Navigator.pop(context),
-              ),
-            );
-          }
-        }
-      }
-    } on PlatformException catch (e) {
-      debugPrint('QR Scan error: $e');
-
-      String errorMessage;
-      if (e.code == BarcodeScanner.cameraAccessDenied) {
-        errorMessage = 'Camera permission denied';
+      if (!mounted) return;
+      if (found != -1) {
+        setState(() {
+          index = found;
+        });
       } else {
-        errorMessage = 'Camera error: ${e.message ?? 'Unknown error'}';
-      }
-
-      if (mounted) {
         showDialog(
           context: context,
           builder: (_) => AppDialogs.errorDialog(
             context,
             "Lỗi!",
-            errorMessage,
+            "Không tìm thấy ID",
             "Đóng",
             () => Navigator.pop(context),
           ),
@@ -471,7 +425,9 @@ class _SlideshowPageState extends State<SlideshowPage> {
     } catch (e) {
       debugPrint('Unexpected QR Scan error: $e');
       // Fallback to manual input on any camera error
-      showSearch();
+      if (mounted) showSearch();
+    } finally {
+      _scanInProgress = false;
     }
   }
 
@@ -514,9 +470,25 @@ class _SlideshowPageState extends State<SlideshowPage> {
     }
 
     final p = widget.persons[index];
+    final canSwipe = widget.persons.length > 1;
 
     return GestureDetector(
       onTap: onUserTouch,
+      onHorizontalDragEnd: canSwipe
+          ? (details) {
+              const swipeVelocityThreshold = 200.0;
+              final vx = details.velocity.pixelsPerSecond.dx;
+              if (vx <= -swipeVelocityThreshold) {
+                paused = true;
+                _animateToNextSlide(isManual: true);
+                onUserTouch();
+              } else if (vx >= swipeVelocityThreshold) {
+                paused = true;
+                _animateToPreviousSlide(isManual: true);
+                onUserTouch();
+              }
+            }
+          : null,
       child: Scaffold(
         body: Stack(
           children: [
@@ -674,3 +646,96 @@ class _SlideshowPageState extends State<SlideshowPage> {
     );
   }
 }
+
+/// Full-screen QR scanner backed by `mobile_scanner` (CameraX / AVFoundation).
+/// Pops with the first non-empty raw value detected, or `null` if cancelled.
+class _QrScannerScreen extends StatefulWidget {
+  const _QrScannerScreen();
+
+  @override
+  State<_QrScannerScreen> createState() => _QrScannerScreenState();
+}
+
+class _QrScannerScreenState extends State<_QrScannerScreen> {
+  final MobileScannerController _controller = MobileScannerController(
+    formats: const [BarcodeFormat.qrCode],
+    detectionSpeed: DetectionSpeed.noDuplicates,
+    facing: CameraFacing.front,
+    // Force a standard 16:9 sensor resolution. Without this, some front
+    // cameras report a non-standard size that the widget's internal
+    // FittedBox can't scale to fill the screen.
+    cameraResolution: const Size(1920, 1080),
+    // Pick the wide (standard) lens. Some devices have an ultrawide front
+    // sensor as the default — that distorts the preview aspect ratio.
+    lensType: CameraLensType.any,
+  );
+  bool _popped = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onDetect(BarcodeCapture capture) {
+    if (_popped || !mounted) return;
+    if (capture.barcodes.isEmpty) return;
+    final raw = capture.barcodes.first.rawValue;
+    if (raw == null || raw.isEmpty) return;
+    _popped = true;
+    Navigator.of(context).pop(raw);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: MobileScanner(
+              controller: _controller,
+              onDetect: _onDetect,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButtonWidget(
+                    icon: Icons.close,
+                    onTap: () => Navigator.of(context).pop(),
+                    heroTag: 'qr_scanner_close_button',
+                  ),
+                  ValueListenableBuilder<MobileScannerState>(
+                    valueListenable: _controller,
+                    builder: (context, state, _) {
+                      // Front cameras typically have no torch. Hide the
+                      // button until the controller is initialized AND
+                      // reports torch is available — also avoids the
+                      // `controllerUninitialized` crash if the user taps
+                      // before camera startup completes.
+                      final available = state.isInitialized &&
+                          state.torchState != TorchState.unavailable;
+                      if (!available) return const SizedBox.shrink();
+                      final on = state.torchState == TorchState.on;
+                      return IconButtonWidget(
+                        icon: on ? Icons.flash_on : Icons.flash_off,
+                        onTap: () => _controller.toggleTorch(),
+                        heroTag: 'qr_scanner_torch_button',
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

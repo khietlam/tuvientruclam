@@ -24,7 +24,7 @@ android {
     defaultConfig {
         applicationId = "ca.truclam.tuvientruclam"
         minSdk = flutter.minSdkVersion
-        targetSdk = 33
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
     }
