@@ -86,7 +86,7 @@ void main() {
       // Verify search hint text
       expect(
         find.text(
-          'Nhập ID, thê danh, pháp danh, ngày mất, hướng thổ hoặc nguyên quán:',
+          'Nhập ID, thê danh, pháp danh, ngày mất, hưởng thọ hoặc nguyên quán:',
         ),
         findsOneWidget,
       );
