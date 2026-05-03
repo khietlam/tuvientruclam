@@ -719,10 +719,7 @@ class _QrScannerScreenState extends State<_QrScannerScreen> {
         children: [
           ValueListenableBuilder<MobileScannerState>(
             valueListenable: _controller,
-            child: MobileScanner(
-              controller: _controller,
-              fit: BoxFit.cover,
-            ),
+            child: MobileScanner(controller: _controller, fit: BoxFit.cover),
             builder: (context, state, scannerChild) {
               final viewport = MediaQuery.sizeOf(context);
               final isViewportPortrait = viewport.height >= viewport.width;
@@ -767,4 +764,3 @@ class _QrScannerScreenState extends State<_QrScannerScreen> {
     );
   }
 }
-
