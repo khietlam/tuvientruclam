@@ -168,7 +168,7 @@ class _SearchDialogState extends State<SearchDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Nhập ID, thê danh, pháp danh, ngày mất, hướng thổ hoặc nguyên quán:",
+              "Nhập ID, thê danh, pháp danh, ngày mất, hưởng thọ hoặc nguyên quán:",
               style: AppTextStyles.getResponsiveStyle(
                 context,
                 12,
